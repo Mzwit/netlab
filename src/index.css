@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-ink-950: #060b16;
+  --color-ink-900: #0a1120;
+  --color-ink-850: #0d1628;
+  --color-ink-800: #111c32;
+  --color-ink-700: #1a2742;
+  --color-ink-600: #263556;
+  --color-ink-500: #3a4a6e;
+  --color-accent: #22d3ee;
+  --color-accent2: #60a5fa;
+}
+
+html, body, #root { height: 100%; }
+body {
+  @apply bg-ink-950 text-slate-200 font-sans antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+::selection { background: rgba(34, 211, 238, 0.3); }
+* { scrollbar-width: thin; scrollbar-color: #263556 transparent; }
+
+@utility panel { @apply rounded-xl border border-ink-700 bg-ink-900; }
+@utility panel-head { @apply flex items-center justify-between gap-2 border-b border-ink-700 px-4 py-2.5 text-sm font-semibold text-slate-100; }
+@utility btn { @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-ink-600 bg-ink-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:border-ink-500 hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-accent; }
+@utility btn-primary { @apply border-cyan-500/60 bg-cyan-500/15 text-cyan-200 hover:bg-cyan-500/25 hover:border-cyan-400; }
+@utility btn-sm { @apply px-2 py-1 text-xs; }
+@utility chip { @apply inline-flex items-center gap-1 rounded-md border border-ink-600 bg-ink-800 px-1.5 py-0.5 text-[11px] font-medium text-slate-300; }
+@utility input { @apply w-full rounded-lg border border-ink-600 bg-ink-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-500/70 focus:ring-2 focus:ring-cyan-500/20; }
+@utility label { @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-400; }
+@utility h1 { @apply text-2xl font-semibold tracking-tight text-white md:text-3xl; }
+@utility h2 { @apply text-lg font-semibold text-white; }
+@utility muted { @apply text-slate-400; }
+@utility card-link { @apply panel block p-4 transition hover:border-cyan-500/40 hover:bg-ink-850; }
+@utility kbd { @apply rounded border border-ink-600 bg-ink-800 px-1.5 py-0.5 font-mono text-[10px] text-slate-400; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
