@@ -6,6 +6,7 @@ import { buildPacket } from '../engine/packet';
 import PacketInspector from './PacketInspector';
 import { DeviceIcon, DEVICE_NAMES, layerColor } from './ui';
 import { store, useStore } from '../lib/store';
+import { play } from '../lib/sound';
 
 type Mode = 'idle' | 'playing' | 'step' | 'paused' | 'done';
 
@@ -96,6 +97,22 @@ export default function SimPlayer({ scenario }: { scenario: Scenario }) {
   const activeHop = positions.map((p) => p.at).find((a) => a && step.hops?.[a]);
   const started = mode !== 'idle' || idx > 0;
   const topLayer = packet?.layers[packet.layers.length - 1]?.id ?? 'data';
+  // Sound effects: departure, arrival, finish
+  const layerNum = /eth|arp|vlan|stp/i.test(topLayer) ? 2 : /ip|icmp|ospf|bgp/i.test(topLayer) ? 3 : /tcp|udp/i.test(topLayer) ? 4 : 7;
+  const prevRef = useRef({ t: 1, mode: 'idle' as Mode, idx: 0 });
+  useEffect(() => {
+    const p = prevRef.current;
+    const moving = (m: Mode) => m === 'playing' || m === 'step';
+    if (moving(mode) && t === 0 && (p.t !== 0 || p.idx !== idx || !moving(p.mode))) {
+      if (step.local) play('local');
+      else if (step.danger) { play('danger'); play('send', layerNum); }
+      else if (Array.isArray(step.to) && step.to.length > 1) play('broadcast', layerNum);
+      else play('send', layerNum);
+    }
+    if (t >= 1 && p.t < 1 && p.idx === idx && !step.local) play(step.dropAt ? 'drop' : step.ok ? 'ok' : 'arrive');
+    if (mode === 'done' && p.mode !== 'done') play('done');
+    prevRef.current = { t, mode, idx };
+  }, [t, mode, idx]); // eslint-disable-line react-hooks/exhaustive-deps
   const dotColor = step.danger ? '#f43f5e' : layerColor(topLayer).hex;
   const routeIds = new Set(routes.flatMap((r) => r.points.map((p, i) => (i ? `${r.points[i - 1].id}|${p.id}` : ''))));
 

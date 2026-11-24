@@ -17,6 +17,7 @@ import PacketInspector from '../components/PacketInspector';
 import { Encapsulation } from './Osi';
 import { OSI } from '../data/knowledge';
 import { NotFound } from './Explore';
+import { play } from '../lib/sound';
 import { API_URL, useSession, authenticate, logout, push, pull } from '../lib/api';
 
 // ------------------------------------------------------------------ Courses
@@ -286,6 +287,10 @@ export function SettingsPage() {
           <select className="input !w-auto" value={st.speed} onChange={(e) => store.settings({ speed: Number(e.target.value) })}>{[0.5, 1, 1.5, 2].map((s) => <option key={s} value={s}>{s}×</option>)}</select></div>
         <div className="flex items-center justify-between p-4"><div><div className="text-sm font-medium text-white">Packet inspector default view</div></div>
           <select className="input !w-auto" value={st.inspectorMode} onChange={(e) => store.settings({ inspectorMode: e.target.value as typeof st.inspectorMode })}><option value="simple">Simple</option><option value="technical">Technical</option><option value="hex">Hex</option></select></div>
+        <label className="flex items-center justify-between p-4"><div><div className="text-sm font-medium text-white">Sound effects</div><div className="text-xs text-slate-500">Whooshes, pings and chimes as packets move and answers are checked.</div></div>
+          <input type="checkbox" className="h-5 w-5 accent-cyan-400" checked={st.sound} onChange={(e) => store.settings({ sound: e.target.checked })} /></label>
+        <div className="flex items-center justify-between gap-4 p-4"><div><div className="text-sm font-medium text-white">Volume</div><div className="text-xs text-slate-500">Plays a test sound when you let go.</div></div>
+          <input type="range" min={0} max={1} step={0.05} className="w-40 accent-cyan-400" value={st.volume} disabled={!st.sound} aria-label="Volume" onChange={(e) => store.settings({ volume: Number(e.target.value) })} onPointerUp={() => play('arrive')} onKeyUp={() => play('arrive')} /></div>
         <label className="flex items-center justify-between p-4"><div><div className="text-sm font-medium text-white">Reduce motion</div><div className="text-xs text-slate-500">Packets jump to each device instead of animating.</div></div>
           <input type="checkbox" className="h-5 w-5 accent-cyan-400" checked={st.reducedMotion} onChange={(e) => store.settings({ reducedMotion: e.target.checked })} /></label>
         <div className="flex flex-wrap items-center gap-2 p-4">

@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Layers, PlayCircle, ShieldAlert, Boxes, Wrench, GraduationCap, ClipboardCheck, BarChart3, BookA, Bookmark, Settings, Search, Menu, X, ChevronRight, ArrowUp, Keyboard, Home, MoreHorizontal,
+  LayoutDashboard, Layers, PlayCircle, ShieldAlert, Boxes, Wrench, GraduationCap, ClipboardCheck, BarChart3, BookA, Bookmark, Settings, Search, Menu, X, ChevronRight, ArrowUp, Keyboard, Home, MoreHorizontal, Volume2, VolumeX,
 } from 'lucide-react';
 import { search, type Item } from '../lib/catalog';
-import { useStore } from '../lib/store';
+import { store, useStore } from '../lib/store';
+import { play } from '../lib/sound';
 import { protocols } from '../data/protocols';
 import { guided } from '../data/guided';
 import { attacks } from '../data/attacks';
@@ -124,7 +125,7 @@ function Signature() {
   const [open, setOpen] = useState(false);
   return (
     <div className="fixed bottom-20 right-3 z-40 lg:bottom-4 lg:right-4">
-      <button onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Developed by ${AUTHOR}`}
+      <button onClick={() => { setOpen((o) => !o); play(open ? 'click' : 'ok'); }} aria-expanded={open} aria-label={`Developed by ${AUTHOR}`}
         className="group flex items-center gap-2 rounded-full border border-cyan-500/30 bg-ink-900/90 p-1 sm:pr-3 text-xs text-slate-300 shadow-lg shadow-cyan-500/10 backdrop-blur transition hover:border-cyan-400/60">
         <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 text-[11px] font-bold text-ink-950">MD</span>
         <span className="hidden sm:inline">Developed by <b className="font-semibold text-cyan-200">{AUTHOR}</b></span>
@@ -261,6 +262,10 @@ export default function Layout({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('scroll', f);
   }, []);
   useHotkeys(() => setHelp(true));
+  const sound = useStore((s) => s.settings.sound);
+  const firstNav = useRef(true);
+  useEffect(() => { if (firstNav.current) { firstNav.current = false; return; } play('nav'); }, [loc.pathname]);
+  useEffect(() => { if (help) play('open'); }, [help]);
   const current = sectionOf(loc.pathname);
 
   const side = (id: string) => (
@@ -318,6 +323,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         <SearchBox />
         <div className="ml-auto flex min-w-0 items-center gap-3">
           <Crumbs />
+          <button className={`btn btn-sm ${sound ? 'text-cyan-200' : ''}`} onClick={() => { store.settings({ sound: !sound }); if (!sound) setTimeout(() => play('correct'), 30); }} aria-pressed={sound} aria-label={sound ? 'Mute sound effects' : 'Turn on sound effects'} title={sound ? 'Sound on' : 'Sound off'}>
+            {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          </button>
           <button className="btn btn-sm hidden md:inline-flex" onClick={() => setHelp(true)} aria-label="Keyboard shortcuts"><Keyboard className="h-4 w-4" /><span className="kbd">?</span></button>
         </div>
       </header>

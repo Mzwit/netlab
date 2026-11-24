@@ -4,6 +4,7 @@ import type { Question } from '../data/questions';
 import { subnetAnswer, normalizeAnswer, subnetQuestion } from '../data/questions';
 import { buildPacket } from '../engine/packet';
 import PacketInspector from './PacketInspector';
+import { play } from '../lib/sound';
 import type { Exercise } from '../data/lessons';
 
 function shuffle<T>(a: T[], seed: number): T[] {
@@ -60,6 +61,7 @@ export function QuestionCard({ q, onAnswer, index }: { q: Question; onAnswer?: (
     else if (q.type === 'order') ok = (order ?? shuffle(q.items, seed)).every((v, i) => v === q.items[i]);
     else if (q.type === 'subnet') ok = normalizeAnswer(text) === normalizeAnswer(subnetAnswer(q).value);
     setDone(ok);
+    play(ok ? 'correct' : 'wrong');
     onAnswer?.(ok);
   };
   const canSubmit = done === null && ((q.type === 'order') || (q.type === 'subnet' ? text.trim() !== '' : choice !== null));

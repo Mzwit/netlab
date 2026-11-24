@@ -6,6 +6,8 @@ export interface Settings {
   reducedMotion: boolean;
   showBinary: boolean;
   name: string;
+  sound: boolean;
+  volume: number;
 }
 export interface ExamResult { id: string; title: string; score: number; total: number; date: number; byTopic: Record<string, [number, number]> }
 export interface State {
@@ -19,7 +21,7 @@ export interface State {
 const KEY = 'netlab:v1';
 const DEFAULT: State = {
   visited: {}, completed: {}, bookmarks: [], exams: [],
-  settings: { speed: 1, inspectorMode: 'technical', reducedMotion: false, showBinary: false, name: '' },
+  settings: { speed: 1, inspectorMode: 'technical', reducedMotion: false, showBinary: false, name: '', sound: true, volume: 0.6 },
 };
 
 function load(): State {

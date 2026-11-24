@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { play as playSfx } from '../lib/sound';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Monitor, Server } from 'lucide-react';
@@ -34,6 +35,12 @@ export function Encapsulation() {
     const t = setTimeout(() => (i < STAGES.length - 1 ? setI(i + 1) : setPlay(false)), 2200);
     return () => clearTimeout(t);
   }, [play, i]);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    const st = STAGES[i];
+    playSfx(st.side === 'wire' ? 'wire' : st.side === 'send' ? 'wrap' : 'unwrap', st.layer);
+  }, [i]);
   const s = STAGES[i];
   const bits = '0100010100000000000001010101110000011100010001100100000000000000';
   return (
